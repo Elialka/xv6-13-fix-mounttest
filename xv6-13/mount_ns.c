@@ -1,4 +1,4 @@
-nclude "types.h"
+#include "types.h"
 #include "defs.h"
 #include "param.h"
 #include "stat.h"
