@@ -63,6 +63,8 @@ static struct mount_ns* allocmount_ns()
           return (mount_ns);
       }
   }
+  // not found, release lock and panic
+  release(&mountnstable.lock);
   panic("out of mount_ns objects");
 }
 
