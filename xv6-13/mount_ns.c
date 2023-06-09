@@ -1,3 +1,5 @@
+// This file handles mount namespaces
+// Modified by Eli Alkhazov 208516351
 #include "types.h"
 #include "defs.h"
 #include "param.h"
