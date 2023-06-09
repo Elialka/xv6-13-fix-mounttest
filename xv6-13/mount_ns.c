@@ -52,12 +52,15 @@ void mount_nsput(struct mount_ns* mount_ns)
 static struct mount_ns* allocmount_ns()
 {
   acquire(&mountnstable.lock);
-
-  // FIX ME: allocate proper entry to preserve a correct mountnamepaces structure
-  struct mount_ns* mount_ns = &mountnstable.mount_ns[0];
-  release(&mountnstable.lock);
-  return (mount_ns);
-
+  // iterate over mount_ns table and look for first empty mount_ns
+  for (int i = 0; i < NNAMESPACE; i++) {
+      struct mount_ns *mount_ns = &mountnstable.mount_ns[i];
+      if (!mount_ns->ref) {  // found empty
+          (mount_ns->ref)++;
+          release(&mountnstable.lock);
+          return (mount_ns);
+      }
+  }
   panic("out of mount_ns objects");
 }
 
