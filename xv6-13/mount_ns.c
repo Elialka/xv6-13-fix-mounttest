@@ -1,4 +1,4 @@
-#include "types.h"
+nclude "types.h"
 #include "defs.h"
 #include "param.h"
 #include "stat.h"
@@ -51,14 +51,25 @@ void mount_nsput(struct mount_ns* mount_ns)
 
 static struct mount_ns* allocmount_ns()
 {
-  acquire(&mountnstable.lock);
+  	acquire(&mountnstable.lock);
+  
+	struct mount_ns* mount_ns;
 
-  // FIX ME: allocate proper entry to preserve a correct mountnamepaces structure
-  struct mount_ns* mount_ns = &mountnstable.mount_ns[0];
-  release(&mountnstable.lock);
-  return (mount_ns);
+	// find an empty mount_ns into mount_ns ptr
+	for (int i = 0; i < NNAMESPACE; i++) {
+		if (mountnstable.mount_ns[i].ref == 0) {
+			// found - add reference # and return after unlock
+			mount_ns = &mountnstable.mount_ns[i];
+			(mount_ns->ref)++;
+			release(&mountnstable.lock);
+		  	return (mount_ns);
+		}
+	}
 
-  panic("out of mount_ns objects");
+	// not found - unlock and panic
+	release(&mountnstable.lock);
+  	panic("out of mount_ns objects");
+
 }
 
 struct mount_ns* copymount_ns()
@@ -74,3 +85,4 @@ struct mount_ns* newmount_ns()
   struct mount_ns* mount_ns = allocmount_ns();
   return mount_ns;
 }
+
